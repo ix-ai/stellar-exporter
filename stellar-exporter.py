@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+""" A Prometheus exporter for Stellar """
 import logging
 import time
 import os
@@ -28,6 +28,7 @@ class StellarCollector:
         }
 
     def getAccounts(self):
+        """ Connects to the Stellar network and retrieves the account information """
         for account in self.settings['accounts']:
             a = Address(address=account, network='public')
             a.get()
