@@ -3,7 +3,7 @@ LABEL ai.ix.maintainer="docker@ix.ai"
 
 ENV LOGLEVEL=INFO
 
-RUN apk add --no-cache python3-dev \
+RUN apk add --no-cache python3-dev &&\
     pip3 install stellar-base
 
 COPY stellar-exporter.py /
