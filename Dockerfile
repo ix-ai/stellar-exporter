@@ -4,7 +4,7 @@ LABEL ai.ix.maintainer="docker@ix.ai"
 ENV LOGLEVEL=INFO
 
 RUN apk add --no-cache python3-dev &&\
-    pip3 install stellar-base mnemonic
+    pip3 install stellar-base mnemonic toml
 
 COPY stellar-exporter.py /
 
