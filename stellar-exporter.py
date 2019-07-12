@@ -49,6 +49,10 @@ class StellarCollector:
 
         LOG.debug('Found the following accounts: {}'.format(self.accounts))
 
+    def describe(self):
+        """ Just a needed method, so that collect() isn't called at startup """
+        return []
+
     def collect(self):
         """ The actual metrics collector """
         metrics = {
