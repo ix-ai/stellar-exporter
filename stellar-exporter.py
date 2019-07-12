@@ -27,7 +27,7 @@ class StellarCollector:
             'accounts': os.environ.get("ACCOUNTS", '').split(','),
         }
 
-    def getAccounts(self):
+    def get_accounts(self):
         """ Connects to the Stellar network and retrieves the account information """
         for account in self.settings['accounts']:
             a = Address(address=account, network='public')
@@ -62,7 +62,7 @@ class StellarCollector:
                 labels=['source_currency', 'currency', 'account', 'type']
             ),
         }
-        self.getAccounts()
+        self.get_accounts()
         for a in self.accounts:
             metrics['account_balance'].add_metric(
                 value=self.accounts[a]['balance'],
