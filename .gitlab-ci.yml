@@ -12,7 +12,7 @@ pylint:
   image: python:latest
   stage: lint
   script:
-    - pip install prometheus_client pylint stellar
+    - pip install prometheus_client pylint stellar-base
     - pylint --rcfile=.pylintrc *.py
 
 build:
