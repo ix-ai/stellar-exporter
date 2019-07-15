@@ -10,7 +10,12 @@ stages:
 services:
   - docker:dind
 
+.tags-template: &tags-definition
+  tags:
+    - ix-ai
+
 pylint:
+  <<: *tags-definition
   image: python:latest
   stage: lint
   script:
@@ -19,6 +24,7 @@ pylint:
     - pylint --rcfile=.pylintrc src/*.py
 
 build:
+  <<: *tags-definition
   image: docker:latest
   stage: build
   only:
