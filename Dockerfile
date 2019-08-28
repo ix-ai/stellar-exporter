@@ -1,12 +1,14 @@
-FROM registry.gitlab.com/ix.ai/alpine:latest
-LABEL MAINTAINER="docker@ix.ai"
+FROM alpine:latest
+LABEL maintainer="docker@ix.ai"
 
 ARG PORT=9308
+ARG LOGLEVEL=INFO
 
-RUN apk add --no-cache python3-dev &&\
-    pip3 install --no-cache-dir stellar-base mnemonic toml
+RUN apk --no-cache upgrade && \
+    apk add --no-cache python3-dev gcc musl-dev && \
+    pip3 install --no-cache-dir stellar-base mnemonic toml prometheus_client pygelf
 
-ENV LOGLEVEL=INFO PORT=${PORT}
+ENV LOGLEVEL=${LOGLEVEL} PORT=${PORT}
 
 COPY src/stellar-exporter.py /
 
