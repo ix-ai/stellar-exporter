@@ -17,11 +17,16 @@ docker run --rm -it -p 9308:9308 \
 ```
 
 ## Supported variables
-* `ACCOUNTS` (no default - **mandatory**) - comma separated list of the accounts monitor the balances
-* `GELF_HOST` (no default) - if set, the exporter will also log to this [GELF](https://docs.graylog.org/en/3.0/pages/gelf.html) capable host on UDP
-* `GELF_PORT` (defaults to `12201`) - the port to use for GELF logging
-* `PORT` (defaults to `9308`) - the listen port for the exporter
-* `LOGLEVEL` (defaults to `INFO`)
+
+| **Variable** | **Default** | **Mandatory** | **Description**                                                                                                        |
+|:-------------|:-----------:|:-------------:|:-----------------------------------------------------------------------------------------------------------------------|
+| `ACCOUNTS`   | -           | **YES**       | comma separated list of the accounts monitor the balances                                                              |
+| `LOGLEVEL`   | `INFO`      | **NO**        | [Logging Level](https://docs.python.org/3/library/logging.html#levels)                                                 |
+| `GELF_HOST`  | -           | **NO**        | if set, the exporter will also log to this [GELF](https://docs.graylog.org/en/3.0/pages/gelf.html) capable host on UDP |
+| `GELF_PORT`  | `12201`     | **NO**        | Ignored, if `GELF_HOST` is unset. The UDP port for GELF logging                                                        |
+| `PORT`       | `9308`      | **NO**        | The port for prometheus metrics                                                                                        |
+
+
 
 ## Resources:
 * GitLab: https://gitlab.com/ix.ai/stellar-exporter
