@@ -1,6 +1,4 @@
 pygelf
 prometheus_client
 stellar-base
-mnemonic
-toml
-pbkdf2
+stellar-sdk
