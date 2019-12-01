@@ -100,6 +100,8 @@ if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 9308))
     LOG.info("Starting on port {}".format(PORT))
     REGISTRY.register(StellarCollector())
-    start_http_server(PORT)
-    while True:
-        time.sleep(1)
+    TEST = os.environ.get('TEST', False)
+    if not TEST:
+        start_http_server(PORT)
+        while True:
+            time.sleep(1)
