@@ -6,9 +6,9 @@ WORKDIR /app
 COPY src/ /app
 
 RUN apk --no-cache upgrade && \
-    apk add --no-cache python3-dev gcc musl-dev libffi-dev && \
+    apk add --no-cache python3-dev gcc musl-dev libffi-dev make && \
     pip3 install --no-cache-dir -r requirements.txt && \
-    apk del --no-cache --purge gcc musl-dev libffi-dev
+    apk del --no-cache --purge gcc musl-dev libffi-dev make
 
 COPY src/stellar-exporter.py /
 
