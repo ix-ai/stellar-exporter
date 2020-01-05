@@ -1,6 +1,6 @@
 pbkdf2
-prometheus_client
+prometheus_client==0.7.1
 pygelf
-stellar-base
-stellar-sdk
-toml
+stellar-base==1.1.2.0
+stellar-sdk==2.1.0
+toml==0.10.0
