@@ -12,19 +12,21 @@ A [Prometheus](https://prometheus.io) exporter for [Stellar](https://www.stellar
 docker run --rm -it -p 9308:9308 \
   -e LOGLEVEL=DEBUG \
   -e GELF_HOST=graylog \
+  -e ACCOUNTS='AAAAA,BBBBB' \
   --name stellar-exporter \
   registry.gitlab.com/ix.ai/stellar-exporter:latest
 ```
 
 ## Supported variables
 
-| **Variable** | **Default** | **Mandatory** | **Description**                                                                                                        |
-|:-------------|:-----------:|:-------------:|:-----------------------------------------------------------------------------------------------------------------------|
-| `ACCOUNTS`   | -           | **YES**       | comma separated list of the accounts monitor the balances                                                              |
-| `LOGLEVEL`   | `INFO`      | **NO**        | [Logging Level](https://docs.python.org/3/library/logging.html#levels)                                                 |
-| `GELF_HOST`  | -           | **NO**        | if set, the exporter will also log to this [GELF](https://docs.graylog.org/en/3.0/pages/gelf.html) capable host on UDP |
-| `GELF_PORT`  | `12201`     | **NO**        | Ignored, if `GELF_HOST` is unset. The UDP port for GELF logging                                                        |
-| `PORT`       | `9308`      | **NO**        | The port for prometheus metrics                                                                                        |
+| **Variable**  | **Default**                    | **Mandatory** | **Description**                                                                                                        |
+|:--------------|:------------------------------:|:-------------:|:-----------------------------------------------------------------------------------------------------------------------|
+| `ACCOUNTS`    | -                              | **YES**       | comma separated list of the accounts monitor the balances                                                              |
+| `HORIZON_URL` | `https://horizon.stellar.org/` | **NO**        | The URL of the horizon server. For the Test network you can use `https://horizon-testnet.stellar.org/`                 |
+| `LOGLEVEL`    | `INFO`                         | **NO**        | [Logging Level](https://docs.python.org/3/library/logging.html#levels)                                                 |
+| `GELF_HOST`   | -                              | **NO**        | if set, the exporter will also log to this [GELF](https://docs.graylog.org/en/3.0/pages/gelf.html) capable host on UDP |
+| `GELF_PORT`   | `12201`                        | **NO**        | Ignored, if `GELF_HOST` is unset. The UDP port for GELF logging                                                        |
+| `PORT`        | `9188`                         | **NO**        | The port for prometheus metrics                                                                                        |
 
 
 

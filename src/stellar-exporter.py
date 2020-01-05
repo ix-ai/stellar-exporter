@@ -5,7 +5,7 @@ import time
 import os
 import sys
 import pygelf
-from stellar_base.address import Address
+from stellar_sdk.server import Server
 from prometheus_client import start_http_server
 from prometheus_client.core import REGISTRY, GaugeMetricFamily
 
@@ -41,29 +41,31 @@ class StellarCollector:
     settings = {}
 
     def __init__(self):
+        server = os.environ.get('HORIZON_URL') if os.environ.get('HORIZON_URL') else 'https://horizon.stellar.org/'
         self.settings = {
             'accounts': os.environ.get("ACCOUNTS", '').split(','),
+            'server': Server(horizon_url=server),
         }
 
     def get_accounts(self):
         """ Connects to the Stellar network and retrieves the account information """
         for account in self.settings['accounts']:
-            a = Address(address=account, network='public')
-            a.get()
-            for balance in a.balances:
-                if balance.get('asset_code'):
-                    currency = balance.get('asset_code')
-                elif balance.get('asset_type') == 'native':
-                    currency = 'XLM'
-                else:
-                    currency = balance.get('asset_type')
-                self.accounts.update({
-                    '{}-{}'.format(account, currency): {
-                        'account': account,
-                        'currency': currency,
-                        'balance': float(balance.get('balance'))
-                    }
-                })
+            balances = self.settings['server'].accounts().account_id(account).call().get('balances')
+            if isinstance(balances, list):
+                for balance in balances:
+                    if balance.get('asset_code'):
+                        currency = balance.get('asset_code')
+                    elif balance.get('asset_type') == 'native':
+                        currency = 'XLM'
+                    else:
+                        currency = balance.get('asset_type')
+                    self.accounts.update({
+                        '{}-{}'.format(account, currency): {
+                            'account': account,
+                            'currency': currency,
+                            'balance': float(balance.get('balance'))
+                        }
+                    })
 
         LOG.debug('Found the following accounts: {}'.format(self.accounts))
 
@@ -97,7 +99,7 @@ class StellarCollector:
 
 if __name__ == '__main__':
     configure_logging()
-    PORT = int(os.environ.get('PORT', 9308))
+    PORT = int(os.environ.get('PORT', 9188))
     LOG.info("Starting on port {}".format(PORT))
     REGISTRY.register(StellarCollector())
     TEST = os.environ.get('TEST', False)
