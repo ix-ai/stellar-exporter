@@ -8,6 +8,7 @@ import pygelf
 from stellar_sdk.server import Server
 from prometheus_client import start_http_server
 from prometheus_client.core import REGISTRY, GaugeMetricFamily
+import constants
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(
@@ -100,7 +101,8 @@ class StellarCollector:
 if __name__ == '__main__':
     configure_logging()
     PORT = int(os.environ.get('PORT', 9188))
-    LOG.info("Starting on port {}".format(PORT))
+    # pylint: disable=no-member
+    LOG.info("Starting stellar-exporter {} on port {}".format(constants.VERSION, PORT))
     REGISTRY.register(StellarCollector())
     TEST = os.environ.get('TEST', False)
     if not TEST:
