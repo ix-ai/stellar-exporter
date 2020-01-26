@@ -30,10 +30,9 @@ docker run --rm -it -p 9308:9308 \
 
 ## Tags and Arch
 
-Starting with version v0.4.0, the images are multi-arch, with builds for amd64, arm64 and armv7.
+Starting with version v0.4.1, the images are multi-arch, with builds for amd64, arm64, armv7 and armv6.
 * `vN.N.N` - for example v0.4.0
 * `latest` - always pointing to the latest version
-* `dev-branch` - the last build on a feature/development branch
 * `dev-master` - the last build on the master branch
 
 ## Resources:

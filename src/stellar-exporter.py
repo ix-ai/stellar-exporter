@@ -18,6 +18,8 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
+FILENAME = os.path.splitext(sys.modules['__main__'].__file__)[0]
+
 
 def configure_logging():
     """ Configures the logging """
@@ -29,7 +31,7 @@ def configure_logging():
             port=int(os.environ.get('GELF_PORT', 12201)),
             debug=True,
             include_extra_fields=True,
-            _ix_id=os.path.splitext(sys.modules['__main__'].__file__)[0][1:],  # sets it to 'stellar-exporter'
+            _ix_id=FILENAME
         )
         LOG.addHandler(GELF)
         gelf_enabled = True
@@ -102,7 +104,7 @@ if __name__ == '__main__':
     configure_logging()
     PORT = int(os.environ.get('PORT', 9188))
     # pylint: disable=no-member
-    LOG.info("Starting stellar-exporter {} on port {}".format(constants.VERSION, PORT))
+    LOG.info("Starting {} {} on port {}".format(FILENAME, constants.VERSION, PORT))
     REGISTRY.register(StellarCollector())
     TEST = os.environ.get('TEST', False)
     if not TEST:
