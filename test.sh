@@ -1,3 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
-TEST=true python3 src/${CI_PROJECT_NAME}.py
+export TEST=true
+./build.sh
+./stellar-exporter.sh

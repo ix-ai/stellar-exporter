@@ -3,39 +3,13 @@
 import logging
 import time
 import os
-import sys
-import pygelf
 from stellar_sdk.server import Server
 from prometheus_client import start_http_server
 from prometheus_client.core import REGISTRY, GaugeMetricFamily
-import constants
+from .lib import constants
 
-LOG = logging.getLogger(__name__)
-logging.basicConfig(
-    stream=sys.stdout,
-    level=os.environ.get("LOGLEVEL", "INFO"),
-    format='%(asctime)s.%(msecs)03d %(levelname)s {%(module)s} [%(funcName)s] %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
-
-FILENAME = os.path.splitext(sys.modules['__main__'].__file__)[0]
-
-
-def configure_logging():
-    """ Configures the logging """
-    gelf_enabled = False
-
-    if os.environ.get('GELF_HOST'):
-        GELF = pygelf.GelfUdpHandler(
-            host=os.environ.get('GELF_HOST'),
-            port=int(os.environ.get('GELF_PORT', 12201)),
-            debug=True,
-            include_extra_fields=True,
-            _ix_id=FILENAME
-        )
-        LOG.addHandler(GELF)
-        gelf_enabled = True
-    LOG.info('Initialized logging with GELF enabled: {}'.format(gelf_enabled))
+log = logging.getLogger(__package__)
+version = f'{constants.VERSION}-{constants.BUILD}'
 
 
 class StellarCollector:
@@ -43,15 +17,17 @@ class StellarCollector:
     accounts = {}
     settings = {}
 
-    def __init__(self):
-        server = os.environ.get('HORIZON_URL') if os.environ.get('HORIZON_URL') else 'https://horizon.stellar.org/'
+    def __init__(self, **kwargs):
         self.settings = {
-            'accounts': os.environ.get("ACCOUNTS", '').split(','),
-            'server': Server(horizon_url=server),
+            'accounts': [],
+            'server': Server(horizon_url=kwargs['horizon_url']),
         }
+        if kwargs.get('accounts'):
+            self.settings['accounts'] = kwargs['accounts'].split(',')
 
     def get_accounts(self):
         """ Connects to the Stellar network and retrieves the account information """
+        log.info('Retrieving accounts')
         for account in self.settings['accounts']:
             balances = self.settings['server'].accounts().account_id(account).call().get('balances')
             if isinstance(balances, list):
@@ -63,14 +39,14 @@ class StellarCollector:
                     else:
                         currency = balance.get('asset_type')
                     self.accounts.update({
-                        '{}-{}'.format(account, currency): {
+                        f'{account}-{currency}': {
                             'account': account,
                             'currency': currency,
                             'balance': float(balance.get('balance'))
                         }
                     })
 
-        LOG.debug('Found the following accounts: {}'.format(self.accounts))
+        log.debug(f'Found the following accounts: {self.accounts}')
 
     def describe(self):
         """ Just a needed method, so that collect() isn't called at startup """
@@ -82,7 +58,7 @@ class StellarCollector:
             'account_balance': GaugeMetricFamily(
                 'account_balance',
                 'Account Balance',
-                labels=['source_currency', 'currency', 'account', 'type']
+                labels=['currency', 'account', 'type']
             ),
         }
         self.get_accounts()
@@ -90,7 +66,6 @@ class StellarCollector:
             metrics['account_balance'].add_metric(
                 value=self.accounts[a]['balance'],
                 labels=[
-                    self.accounts[a]['currency'],
                     self.accounts[a]['currency'],
                     self.accounts[a]['account'],
                     'stellar',
@@ -100,14 +75,28 @@ class StellarCollector:
             yield metric
 
 
+def _test(collector):
+    for metric in collector.collect():
+        log.info(f"{metric}")
+
+
 if __name__ == '__main__':
-    configure_logging()
-    PORT = int(os.environ.get('PORT', 9188))
-    # pylint: disable=no-member
-    LOG.info("Starting {} {} on port {}".format(FILENAME, constants.VERSION, PORT))
-    REGISTRY.register(StellarCollector())
-    TEST = os.environ.get('TEST', False)
-    if not TEST:
-        start_http_server(PORT)
+    port = int(os.environ.get('PORT', 9188))
+    settings = {
+        'horizon_url': os.environ.get('HORIZON_URL', 'https://horizon.stellar.org/'),
+        'accounts': os.environ.get("ACCOUNTS", []),
+    }
+    log.warning(f"Starting {__package__} {version} on port {port}")
+
+    if os.environ.get('TEST', False):
+        _test(StellarCollector(
+            horizon_url='https://horizon.stellar.org/',
+            accounts='GA5XIGA5C7QTPTWXQHY6MCJRMTRZDOSHR6EFIBNDQTCQHG262N4GGKTM'  # kraken
+            ',GD6RMKTCHQGEOGYWIKSY5G7QWXPZOAEZIKPKEVZUAXOQCZRVBRRFGLJM'  # NydroEnergy
+            ',GCNSGHUCG5VMGLT5RIYYZSO7VQULQKAJ62QA33DBC5PPBSO57LFWVV6P'  # InterstellarExchange
+            ))
+    else:
+        REGISTRY.register(StellarCollector(**settings))
+        start_http_server(port)
         while True:
             time.sleep(1)
