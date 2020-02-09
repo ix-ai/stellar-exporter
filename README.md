@@ -24,6 +24,8 @@ docker run --rm -it -p 9308:9308 \
 | `HORIZON_URL` | `https://horizon.stellar.org/` | **NO**        | The URL of the horizon server. For the Test network you can use `https://horizon-testnet.stellar.org/` |
 | `LOGLEVEL`    | `INFO`                         | **NO**        | [Logging Level](https://docs.python.org/3/library/logging.html#levels)                                 |
 | `PORT`        | `9188`                         | **NO**        | The port for prometheus metrics                                                                        |
+| `GELF_HOST`   | -                              | NO            | If set, the exporter will also log to this [GELF](https://docs.graylog.org/en/3.0/pages/gelf.html) capable host on UDP |
+| `GELF_PORT`   | `12201`                        | NO            | Ignored, if `GELF_HOST` is unset. The UDP port for GELF logging |
 
 ## Tags and Arch
 
